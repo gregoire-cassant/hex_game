@@ -6,4 +6,4 @@ game: game.o main.o menu.o board.o types.o ia.o
 	gcc -Werror -Wextra -c $<
 
 clean:
-	rm *.o game
+	rm game.o main.o menu.o board.o types.o ia.o game

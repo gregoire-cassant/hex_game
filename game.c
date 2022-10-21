@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -7,6 +9,7 @@
 
 // This is the main file of the project to be completed.
 int _size;
+int WALKED_ON = 3;
 
 color **createBoard()
 {
@@ -25,6 +28,25 @@ color **createBoard()
     }
 
     return board;
+}
+
+color **copy_board(color **board)
+{
+    int size = _size;
+
+    color **copy_board = malloc(sizeof(color *) * size);
+
+    for (int i = 0; i < size; i++)
+    {
+        copy_board[i] = malloc(sizeof(color) * size);
+
+        for (int j = 0; j < size; j++)
+        {
+            copy_board[i][j] = board[i][j];
+        }
+    }
+
+    return copy_board;
 }
 
 /* Functions used for interfacing with User */
@@ -121,7 +143,7 @@ check:
 void uponVictory(color **board, color c, hIA winner)
 {
     int size = _size;
-    // system("clear");
+    system("clear");
     print_board(size, board);
     if (winner == IA)
         printf("%s IA WINS !\n", colorToString(c));
@@ -131,84 +153,69 @@ void uponVictory(color **board, color c, hIA winner)
     flushStdin();
 }
 
-void has_won_recursive(color **board, color player, int start, int *found)
+int has_won_rec_helper(color **board_copy, int x, int y, color curr_color)
 {
     int size = _size;
 
-    if (start >= size)
-        return;
+    if ((int)(board_copy[x][y]) == WALKED_ON)
+        return 0;
 
-    int *new_found = malloc(sizeof(int) * size);
-    for (int i = 0; i < size; i++)
-        new_found[i] = 0;
-
-    if (player == RED)
+    if (
+        (curr_color == RED && (x == 0 && board_copy[x][y] == curr_color)) ||
+        (curr_color == BLUE && (y == 0 && board_copy[x][y] == curr_color)))
     {
-        for (int i = 0; i < size; i++)
-        {
-            if (
-                (start == 0 && board[start][i] == RED) ||
-                (board[start][i] == RED &&
-                 (found[i] || (i > 0 && found[i - 1]) ||
-                  (i > 0 && board[start][i - 1] == RED))))
-            {
-                new_found[i] = 1;
-            }
-            else
-            {
-                new_found[i] = 0;
-            }
-            // printf("%c  %d  %d\t\t", i + 97, board[start][i], new_found[i]);
-        }
-        // printf("\n");
-    }
-    else
-    {
-        for (int i = 0; i < size; i++)
-        {
-
-            if (
-                (start == 0 && board[i][start] == BLUE) ||
-                (board[i][start] == BLUE &&
-                 (found[i] || (i > 0 && found[i - 1]) ||
-                  (i > 0 && board[i - 1][start] == BLUE))))
-            {
-                new_found[i] = 1;
-            }
-            else
-            {
-                new_found[i] = 0;
-            }
-
-            // printf("%c  %d  %d\t\t", i + 97, board[i][start], new_found[i]);
-        }
-        // printf("\n");
+        return 1;
     }
 
-    free(found);
+    int reached = 0;
 
-    has_won_recursive(board, player, start + 1, new_found);
+    board_copy[x][y] = WALKED_ON;
+
+    if (x > 0 && board_copy[x - 1][y] == curr_color)
+        reached = has_won_rec_helper(board_copy, x - 1, y, curr_color);
+
+    if (x < size - 1 && board_copy[x + 1][y] == curr_color)
+        reached = reached | has_won_rec_helper(board_copy, x + 1, y, curr_color);
+
+    if (x < size - 1 && y < size - 1 && board_copy[x + 1][y + 1] == curr_color)
+        reached = reached | has_won_rec_helper(board_copy, x + 1, y + 1, curr_color);
+
+    if (x > 0 && y > 0 && board_copy[x - 1][y - 1] == curr_color)
+        reached = reached | has_won_rec_helper(board_copy, x - 1, y - 1, curr_color);
+
+    if (y > 0 && board_copy[x][y - 1] == curr_color)
+        reached = reached | has_won_rec_helper(board_copy, x, y - 1, curr_color);
+
+    if (y < size - 1 && board_copy[x][y + 1] == curr_color)
+        reached = reached | has_won_rec_helper(board_copy, x, y + 1, curr_color);
+
+    return reached;
 }
 
 int has_won(color **board, color player)
 {
     int size = _size;
-    int start = 0;
-    int *found = malloc(sizeof(int) * size);
-    for (int i = 0; i < size; i++)
-        found[i] = 0;
+    int start = size - 1;
+    int has_reached_start = 0;
 
-    has_won_recursive(board, player, 0, found);
+    color **board_copy = copy_board(board);
 
     for (int i = 0; i < size; i++)
     {
-        if (found[i])
-            return 0;
+        if (player == RED && board_copy[start][i] == RED)
+        {
+            has_reached_start = has_won_rec_helper(board_copy, start, i, RED);
+        }
+
+        if (player == BLUE && board_copy[i][start] == BLUE)
+        {
+            has_reached_start = has_won_rec_helper(board_copy, i, start, BLUE);
+        }
     }
 
-    free(found);
+    free(board_copy);
 
-    return 1;
+    return !has_reached_start;
 }
 
 // To be completed:
@@ -222,25 +229,29 @@ void newGame(hIA opponent)
     // ... here.
     _size = size;
 
-    int playing = 1;
+    int is_playing = 1;
     int curr_player = 0;
     color **board = createBoard();
 
     print_board(size, board);
 
-    while (playing)
+    while (is_playing)
     {
         print_board(size, board);
-
         printf((curr_player) ? "PLayer 2: " : "PLayer 1: ");
+
         cords player_cord = inputUser(board);
         board[player_cord.y][player_cord.x] = (curr_player) ? BLUE : RED;
-        playing = has_won(board, curr_player);
+
+        is_playing = has_won(board, curr_player);
 
         curr_player = (curr_player + 1) % 2;
     }
 
+    // reverse curr_player color because it is switched at the end of the while
+
     uponVictory(board, curr_player ? RED : BLUE, HUMAN);
+
     flushStdin();
 
     free(board);
