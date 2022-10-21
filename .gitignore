@@ -1,3 +1,5 @@
 *.o
 game
 .vscode
+.hex-save*
+vgcore*

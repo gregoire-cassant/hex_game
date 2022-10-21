@@ -21,3 +21,9 @@ typedef struct
     int x;
     int y;
 } cords;
+
+typedef struct linked
+{
+    void *item;
+    struct linked *next;
+} linked_t;

@@ -18,9 +18,9 @@ int main()
         answer = getchar();
         flushStdin();
         if (answer == '1')
-            newGame(HUMAN);
+            newGame(HUMAN, NULL);
         else if (answer == '2')
-            newGame(IA);
+            newGame(IA, NULL);
         else if (answer == '3')
             newIA();
         else if (answer == '4')
