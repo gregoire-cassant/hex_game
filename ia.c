@@ -1,16 +1,19 @@
-// This file should not be modified.
-
-enum color { RED, BLUE, GREY } ;
-typedef enum color color ;
+#include "types.h"
 
 
-typedef enum { IA, HUMAN } hIA;
 
-color opp(color c) {
-  if (c == RED)
-    return BLUE ;
-  else
-    return RED ;
+// To be modified.
+
+void inputIA (color c, int size, color** board, int* x, int* y) {
+    for (int i = 0; i < size; i++)
+      for (int j = 0; j <size; j++)
+	if (board[i][j] == GREY) {
+	  *x = i ;
+	  *y = j ;
+	  i = size ;
+	  j = size ;
+	}
 }
+
 
 
