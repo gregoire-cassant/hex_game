@@ -118,16 +118,86 @@ check:
 
 // To use upon victory of a player.
 // This might need to be completed.
-void uponVictory(color c, hIA winner)
+void uponVictory(color **board, color c, hIA winner)
 {
+    int size = _size;
     system("clear");
-    print_board();
+    print_board(size, board);
     if (winner == IA)
         printf("%s IA WINS !\n", colorToString(c));
     else
         printf("%s WINS !\n", colorToString(c));
     printf("Press ENTER to return to Main Menu.\n");
     flushStdin();
+}
+
+void has_won_recursive(color **board, color player, int start, int *found)
+{
+    int size = _size;
+
+    if (start >= size)
+        return;
+
+    if (player == RED)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            if (
+                (start == 0 && board[start][i] == RED) ||
+                (board[start][i] == RED &&
+                 (found[i] || (start > 0 && i > 0 && board[start - 1][i - 1] == RED) ||
+                  (i > 0 && board[start][i - 1] == RED))))
+            {
+                found[i] = 1;
+            }
+            else
+            {
+                found[i] = 0;
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < size; i++)
+        {
+
+            if (
+                (start == 0 && board[i][start] == BLUE) ||
+                (board[i][start] == BLUE &&
+                 (found[i] || (start > 0 && i > 0 && board[i - 1][start - 1] == BLUE) ||
+                  (i > 0 && board[i - 1][start] == BLUE))))
+            {
+                found[i] = 1;
+            }
+            else
+            {
+                found[i] = 0;
+            }
+        }
+    }
+
+    has_won_recursive(board, player, start + 1, found);
+}
+
+int has_won(color **board, color player)
+{
+    int size = _size;
+    int start = 0;
+    int *found = malloc(sizeof(int) * size);
+    for (int i = 0; i < size; i++)
+        found[i] = 0;
+
+    has_won_recursive(board, player, 0, found);
+
+    for (int i = 0; i < size; i++)
+    {
+        if (found[i])
+            return 0;
+    }
+
+    free(found);
+
+    return 1;
 }
 
 // To be completed:
@@ -142,7 +212,7 @@ void newGame(hIA opponent)
     _size = size;
 
     int playing = 1;
-    int curr_player = 1;
+    int curr_player = 0;
     color **board = createBoard();
 
     print_board(size, board);
@@ -151,23 +221,21 @@ void newGame(hIA opponent)
     {
         print_board(size, board);
 
-        printf((curr_player == 1) ? "PLayer 1: " : "PLayer 2: ");
+        printf((curr_player) ? "PLayer 2: " : "PLayer 1: ");
         cords player_cord = inputUser(board);
-        board[player_cord.y][player_cord.x] = (curr_player == 1) ? RED : BLUE;
+        board[player_cord.y][player_cord.x] = (curr_player) ? BLUE : RED;
+        playing = has_won(board, curr_player);
 
         curr_player = (curr_player + 1) % 2;
-
-        playing = has_won(board, curr_player);
     }
 
+    uponVictory(board, curr_player ? RED : BLUE, HUMAN);
+    flushStdin();
+
+    free(board);
     // To remove:
     // printf("Not implemented yet, sorry !\n");
     // printf("Press ENTER to return to Main Menu.\n");
-    // flushStdin();
-}
-
-int has_won(color **board)
-{
 }
 
 // To be completed:

@@ -1,9 +1,6 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
 void flushStdin();
 void newGame(hIA opponent);
 void newIA();
 void load(hIA opponent);
-
-#endif

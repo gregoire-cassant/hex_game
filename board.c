@@ -114,7 +114,7 @@ void print_board(int size, color **board)
             {
                 int b = size - 1 - (i - (j + 1) / 2);
                 int a = size - 1 - j / 2;
-    
+
                 char row = numToChar(a);
                 char col = numToChar(b);
 

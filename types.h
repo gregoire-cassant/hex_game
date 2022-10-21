@@ -1,5 +1,4 @@
-#ifndef TYPES_H
-#define TYPES_H
+#pragma once
 
 enum color
 {
@@ -17,9 +16,8 @@ typedef enum
 
 color opp(color c);
 
-typedef struct {
+typedef struct
+{
     int x;
     int y;
 } cords;
-
-#endif
