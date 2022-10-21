@@ -2,22 +2,22 @@
 
 enum color
 {
-  RED,
-  BLUE,
-  GREY
+    RED,
+    BLUE,
+    GREY
 };
 typedef enum color color;
 
 typedef enum
 {
-  IA,
-  HUMAN
+    IA,
+    HUMAN
 } hIA;
 
 color opp(color c)
 {
-  if (c == RED)
-    return BLUE;
-  else
-    return RED;
+    if (c == RED)
+        return BLUE;
+    else
+        return RED;
 }

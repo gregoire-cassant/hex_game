@@ -8,19 +8,23 @@
 // This is the main file of the project to be completed.
 int _size;
 
-void createBoard()
+color **createBoard()
 {
-    // color **board = malloc(sizeof(color) * size * size);
+    int size = _size;
 
-    // for (int i = 0; i < size; i++)
-    // {
-    //     color board[i] = malloc(sizeof(color) * size);
+    color **board = malloc(sizeof(color *) * size);
 
-    //     for (int j = 0; j < size; j++)
-    //     {
-    //         board[i][j] = GREY;
-    //     }
-    // }
+    for (int i = 0; i < size; i++)
+    {
+        board[i] = malloc(sizeof(color) * size);
+
+        for (int j = 0; j < size; j++)
+        {
+            board[i][j] = GREY;
+        }
+    }
+
+    return board;
 }
 
 /* Functions used for interfacing with User */
@@ -44,19 +48,69 @@ void flushStdin()
 }
 
 // TODO: To be completed
-void inputUser()
+cords inputUser(color **board)
 {
     printf("Enter a valid cell name (e.g. AA): ");
     int a = getchar();
     int b = getchar();
     flushStdin();
-    while (a > 122 || a < 65 || b > 122 || b < 65 || (a < 97 && a > 90) || (b < 97 && b > 90))
+    int size = _size;
+    goto check;
+
+already_taken:
+    printf("Cell already taken, please enter another cell name (e.g. AA): ");
+    a = getchar();
+    b = getchar();
+    flushStdin();
+    goto check;
+
+not_valid:
+    printf("Invalid cell name, please enter a valid cell name (e.g. AA): ");
+    a = getchar();
+    b = getchar();
+    flushStdin();
+    goto check;
+
+check:
+    if (a >= 65 && a <= 90)
     {
-        printf("Invalid cell name, please enter a valid cell name (e.g. AA): ");
-        a = getchar();
-        b = getchar();
-        flushStdin();
+        a = a - 65;
     }
+    else if (a >= 97 && a <= 122)
+    {
+        a = a - 97 + 26;
+    }
+    else
+    {
+        goto not_valid;
+    }
+
+    if (b >= 65 && b <= 90)
+    {
+        b = b - 65;
+    }
+    else if (b >= 97 && b <= 122)
+    {
+        b = b - 97 + 26;
+    }
+    else
+    {
+        goto not_valid;
+    }
+
+    if (a >= size || b >= size)
+    {
+        goto not_valid;
+    }
+
+    if (board[b][a] != GREY)
+    {
+        goto already_taken;
+    }
+
+    cords xy = {a, b};
+
+    return xy;
     // At this point, I guarantee that a,b are integers that correspond to valid cell names
     // that is of the form XY with X and Y two letters, upper or lower; and nothing else.
     // to be completed.
@@ -85,11 +139,35 @@ void newGame(hIA opponent)
     scanf("%d", &size);
     flushStdin();
     // ... here.
+    _size = size;
+
+    int playing = 1;
+    int curr_player = 1;
+    color **board = createBoard();
+
+    print_board(size, board);
+
+    while (playing)
+    {
+        print_board(size, board);
+
+        printf((curr_player == 1) ? "PLayer 1: " : "PLayer 2: ");
+        cords player_cord = inputUser(board);
+        board[player_cord.y][player_cord.x] = (curr_player == 1) ? RED : BLUE;
+
+        curr_player = (curr_player + 1) % 2;
+
+        playing = has_won(board, curr_player);
+    }
 
     // To remove:
-    printf("Not implemented yet, sorry !\n");
-    printf("Press ENTER to return to Main Menu.\n");
-    flushStdin();
+    // printf("Not implemented yet, sorry !\n");
+    // printf("Press ENTER to return to Main Menu.\n");
+    // flushStdin();
+}
+
+int has_won(color **board)
+{
 }
 
 // To be completed:
@@ -102,6 +180,9 @@ void newIA()
     flushStdin();
     // ... here.
     _size = size;
+
+    createBoard();
+
     // To remove:
     printf("Not implemented yet, sorry !\n");
     printf("Press ENTER to return to Main Menu.\n");

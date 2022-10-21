@@ -17,4 +17,9 @@ typedef enum
 
 color opp(color c);
 
+typedef struct {
+    int x;
+    int y;
+} cords;
+
 #endif
