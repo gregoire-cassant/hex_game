@@ -121,7 +121,7 @@ check:
 void uponVictory(color **board, color c, hIA winner)
 {
     int size = _size;
-    system("clear");
+    // system("clear");
     print_board(size, board);
     if (winner == IA)
         printf("%s IA WINS !\n", colorToString(c));
@@ -138,6 +138,10 @@ void has_won_recursive(color **board, color player, int start, int *found)
     if (start >= size)
         return;
 
+    int *new_found = malloc(sizeof(int) * size);
+    for (int i = 0; i < size; i++)
+        new_found[i] = 0;
+
     if (player == RED)
     {
         for (int i = 0; i < size; i++)
@@ -145,16 +149,18 @@ void has_won_recursive(color **board, color player, int start, int *found)
             if (
                 (start == 0 && board[start][i] == RED) ||
                 (board[start][i] == RED &&
-                 (found[i] || (start > 0 && i > 0 && board[start - 1][i - 1] == RED) ||
+                 (found[i] || (i > 0 && found[i - 1]) ||
                   (i > 0 && board[start][i - 1] == RED))))
             {
-                found[i] = 1;
+                new_found[i] = 1;
             }
             else
             {
-                found[i] = 0;
+                new_found[i] = 0;
             }
+            // printf("%c  %d  %d\t\t", i + 97, board[start][i], new_found[i]);
         }
+        // printf("\n");
     }
     else
     {
@@ -164,19 +170,24 @@ void has_won_recursive(color **board, color player, int start, int *found)
             if (
                 (start == 0 && board[i][start] == BLUE) ||
                 (board[i][start] == BLUE &&
-                 (found[i] || (start > 0 && i > 0 && board[i - 1][start - 1] == BLUE) ||
+                 (found[i] || (i > 0 && found[i - 1]) ||
                   (i > 0 && board[i - 1][start] == BLUE))))
             {
-                found[i] = 1;
+                new_found[i] = 1;
             }
             else
             {
-                found[i] = 0;
+                new_found[i] = 0;
             }
+
+            // printf("%c  %d  %d\t\t", i + 97, board[i][start], new_found[i]);
         }
+        // printf("\n");
     }
 
-    has_won_recursive(board, player, start + 1, found);
+    free(found);
+
+    has_won_recursive(board, player, start + 1, new_found);
 }
 
 int has_won(color **board, color player)
