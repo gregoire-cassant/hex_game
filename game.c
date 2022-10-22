@@ -10,7 +10,6 @@
 
 // This is the main file of the project to be completed.
 int _size;
-int WALKED_ON = 3;
 
 color **createBoard()
 {
@@ -73,11 +72,11 @@ void flushStdin()
 // TODO: To be completed
 cords inputUser(color **board)
 {
+    int size = _size;
     printf("Enter a valid cell name (e.g. AA): ");
     int a = getchar();
     int b = getchar();
     flushStdin();
-    int size = _size;
     goto check;
 
 already_taken:
@@ -157,6 +156,7 @@ void uponVictory(color **board, color c, hIA winner)
 int has_won_rec_helper(color **board_copy, int x, int y, color curr_color)
 {
     int size = _size;
+    int WALKED_ON = 3;
 
     if ((int)(board_copy[x][y]) == WALKED_ON)
         return 0;
@@ -205,12 +205,12 @@ int has_won(color **board, color player)
     {
         if (player == RED && board_copy[start][i] == RED)
         {
-            has_reached_start = has_won_rec_helper(board_copy, start, i, RED);
+            has_reached_start = has_reached_start | has_won_rec_helper(board_copy, start, i, RED);
         }
 
         if (player == BLUE && board_copy[i][start] == BLUE)
         {
-            has_reached_start = has_won_rec_helper(board_copy, i, start, BLUE);
+            has_reached_start = has_reached_start | has_won_rec_helper(board_copy, i, start, BLUE);
         }
     }
 
@@ -249,8 +249,6 @@ void newGame(hIA opponent, color **saved_board, char *save_name)
     }
 
     color **board = saved_board != NULL ? saved_board : createBoard();
-
-    print_board(size, board);
 
     while (is_playing)
     {

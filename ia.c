@@ -7,7 +7,6 @@
 // To be modified.
 cords inputIA(color c, int size, color **board)
 {
-
     cords ia_cord = {0, 0};
 
     printf("You are so bad :(\n");
