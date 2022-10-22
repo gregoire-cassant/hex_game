@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "types.h"
+#include "save.h"
 #include "board.h"
 #include "menu.h"
 #include "game.h"
@@ -18,9 +19,9 @@ int main()
         answer = getchar();
         flushStdin();
         if (answer == '1')
-            newGame(HUMAN, NULL);
+            newGame(HUMAN, NULL, NULL);
         else if (answer == '2')
-            newGame(IA, NULL);
+            newGame(IA, NULL, NULL);
         else if (answer == '3')
             newIA();
         else if (answer == '4')

@@ -1,12 +1,11 @@
-#include <fcntl.h>
 #include <unistd.h>
-#include <dirent.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include "types.h"
 #include "board.h"
+#include "save.h"
 #include "ia.h"
 
 // This is the main file of the project to be completed.
@@ -221,7 +220,7 @@ int has_won(color **board, color player)
 }
 
 // To be completed:
-void newGame(hIA opponent, color **saved_board)
+void newGame(hIA opponent, color **saved_board, char *save_name)
 {
     int size;
 
@@ -233,13 +232,21 @@ void newGame(hIA opponent, color **saved_board)
         flushStdin();
         // ... here.
         _size = size;
-    } else {
+    }
+    else
+    {
         size = _size;
     }
 
-
     int is_playing = 1;
     int curr_player = 0;
+
+    if (save_name == NULL)
+    {
+        save_name = malloc(sizeof(char) * 30);
+        for (int i = 0; i < 30; i++)
+            save_name[i] = '\0';
+    }
 
     color **board = saved_board != NULL ? saved_board : createBoard();
 
@@ -257,7 +264,7 @@ void newGame(hIA opponent, color **saved_board)
 
         curr_player = (curr_player + 1) % 2;
 
-        // save_game(board);
+        save_name = save_game(board, save_name);
     }
 
     // reverse curr_player color because it is switched at the end of the while
@@ -288,151 +295,4 @@ void newIA()
     printf("Not implemented yet, sorry !\n");
     printf("Press ENTER to return to Main Menu.\n");
     flushStdin();
-}
-
-// Partie Optionnel du projet: sauvegarde de partie.
-
-linked_t *read_saves()
-{
-    DIR *dp = opendir(".");
-    if (!dp)
-    {
-        perror(".");
-        return NULL;
-    }
-
-    struct dirent *ep;
-
-    linked_t *link_list = malloc(sizeof(link_list));
-    linked_t *first_node = link_list;
-
-    while (ep = readdir(dp))
-    {
-        if (strncmp(ep->d_name, ".hex-save", 9) == 0)
-        {
-            linked_t *new_node = malloc(sizeof(link_list));
-            new_node->item = strdup(ep->d_name);
-            new_node->next = NULL;
-
-            link_list->next = new_node;
-            link_list = link_list->next;
-        }
-    }
-
-    closedir(dp);
-
-    return first_node->next;
-}
-
-char *open_save(char *save_path)
-{
-    int fd;
-    char buffer[20] = {'\0'};
-    int f_size = 0;
-    int size = 1;
-
-    // get file size for malloc
-    fd = open(save_path, O_RDONLY);
-    while (size)
-    {
-        size = read(fd, buffer, 20);
-        f_size += size;
-    }
-    close(fd);
-    //
-
-    char *save_content = malloc(sizeof(char) * (f_size + 1));
-    for (int i = 0; i < f_size + 1; i++)
-        save_content[i] = '\0';
-
-    fd = open(save_path, O_RDONLY);
-    read(fd, save_content, f_size);
-
-    close(fd);
-
-    return save_content;
-}
-
-int inputUserNumber(int max)
-{
-    int number = max;
-    printf("Select a save number: (e.g. 0)\n");
-    scanf("%d", &number);
-    flushStdin();
-    goto check;
-
-choose_correct_number:
-    printf("Select a valid save number: (e.g. 0)\n");
-    scanf("%d", &number);
-    flushStdin();
-    goto check;
-
-check:
-    if (number >= max)
-    {
-        goto choose_correct_number;
-    }
-
-    return number;
-}
-
-// void save_game(color **board)
-// {
-    // TODO
-    // save board into file
-
-// }
-
-color **create_board_from_save(char *save)
-{
-    int size = atoi(save);
-    _size = size;
-
-    int index = 0;
-    while (save[index] != ';')
-        index++;
-    index++;
-
-    color **board = createBoard();
-
-    for (int i = 0; i < size; i++)
-    {
-        for (int j = 0; j < size; j++)
-        {
-            board[i][j] = atoi(&(save[index]));
-            index += 2;
-        }
-    }
-
-    return board;
-}
-
-void load(hIA opponent)
-{
-    linked_t *saves = read_saves();
-    system("clear");
-
-    if (saves == NULL)
-        return;
-    else
-        printf("\033[0;31mSaves:\033[0m\n");
-
-    int last_index = 0;
-    int i = 0;
-
-    while (saves[i].item != NULL)
-    {
-        printf("\t\033[0;35msave number: %d (%s)\033[0m\n", i, saves[i].item);
-        i++;
-    }
-
-    int chosen_index = inputUserNumber(i);
-    char *save = open_save(saves[chosen_index].item);
-
-    color **saved_board = create_board_from_save(save);
-
-    newGame(opponent, saved_board);
-
-    // printf("Not implemented yet, sorry !\n");
-    // printf("Press ENTER to return to Main Menu.\n");
 }
