@@ -255,9 +255,9 @@ void newGame(hIA opponent, color **saved_board, char *save_name)
     while (is_playing)
     {
         print_board(size, board);
-        printf((curr_player) ? "PLayer 2: " : "PLayer 1: ");
+        printf((curr_player) ? ((opponent == IA) ? "Ai: " : "PLayer 2: ") : "PLayer 1: ");
+        cords player_cord = (curr_player == 1 && opponent == IA) ? inputIA(BLUE, size, board) : inputUser(board);
 
-        cords player_cord = inputUser(board);
         board[player_cord.y][player_cord.x] = (curr_player) ? BLUE : RED;
 
         is_playing = has_won(board, curr_player);
@@ -273,9 +273,6 @@ void newGame(hIA opponent, color **saved_board, char *save_name)
     flushStdin();
 
     free(board);
-    // To remove:
-    // printf("Not implemented yet, sorry !\n");
-    // printf("Press ENTER to return to Main Menu.\n");
 }
 
 // To be completed:

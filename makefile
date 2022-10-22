@@ -7,3 +7,4 @@ game: game.o main.o menu.o board.o types.o ia.o save.o
 
 clean:
 	rm game.o main.o menu.o board.o types.o ia.o save.o game
+	rm .hex-save_*

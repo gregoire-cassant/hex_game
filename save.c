@@ -209,5 +209,6 @@ void load(hIA opponent)
 
     color **saved_board = create_board_from_save(save);
 
+    // send the save_name so that it remains in the same save file
     newGame(opponent, saved_board, saves->item);
 }
