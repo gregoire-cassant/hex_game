@@ -202,16 +202,14 @@ void printMenu()
         printf(" ");
     printf("🟦🟥\n");
 
-    printf("\033[0;31m");
-    printf("Main Menu:\n");
-    printf("\033[0m");
+    printf(RED("Main Menu:"));
 
-    printf("\033[0;35m");
+    printf(PURPLE_S);
     printf("\t\t1. New PvP Game");
     printf("\t\t\t\t2. New PvIA Game");
     printf("\t\t\t3. New IAvIA Game \n");
     printf("\t\t4. Load PvP Game");
     printf("\t\t\t5. Load PvIA Game");
     printf("\t\t\t6. Quit \n");
-    printf("\033[0m");
+    printf(PURPLE_E);
 }

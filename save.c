@@ -25,14 +25,14 @@ linked_t *read_saves()
 
     struct dirent *ep;
 
-    linked_t *link_list = malloc(sizeof(link_list));
+    linked_t *link_list = malloc(sizeof(linked_t));
     linked_t *first_node = link_list;
 
     while (ep = readdir(dp))
     {
         if (strncmp(ep->d_name, ".hex-save", 9) == 0)
         {
-            linked_t *new_node = malloc(sizeof(link_list));
+            linked_t *new_node = malloc(sizeof(linked_t));
             new_node->item = strdup(ep->d_name);
             new_node->next = NULL;
 
@@ -170,7 +170,7 @@ int print_saves(linked_t *saves)
 
     while (saves != NULL)
     {
-        printf("\t\033[0;35msave number: %d (%s)\033[0m\n", i, saves->item);
+        printf(PURPLE("\tsave number: %d (%s)"), i, saves->item);
         saves = saves->next;
         i++;
     }
@@ -185,13 +185,13 @@ void load(hIA opponent)
 
     if (saves == NULL)
     {
-        printf("\033[0;31mThere are no saved games.\033[0m\n");
+        printf(RED("There are no saved games."));
         printf("Press ENTER to return to Main Menu.\n");
         flushStdin();
         return;
     }
     else
-        printf("\033[0;31mSaves:\033[0m\n");
+        printf(RED("Saves:"));
 
     int nb_saves = print_saves(saves);
     int chosen_index = inputUserSaveNumber(nb_saves);
@@ -210,7 +210,4 @@ void load(hIA opponent)
     color **saved_board = create_board_from_save(save);
 
     newGame(opponent, saved_board, saves->item);
-
-    // printf("Not implemented yet, sorry !\n");
-    // printf("Press ENTER to return to Main Menu.\n");
 }
