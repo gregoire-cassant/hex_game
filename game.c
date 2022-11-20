@@ -80,7 +80,7 @@ cords inputUser(color **board)
     goto check;
 
 already_taken:
-    printf("Cell already taken, please enter another cell name (e.g. AA): ");
+    printf("This cell is already occupied !");
     a = getchar();
     b = getchar();
     flushStdin();
